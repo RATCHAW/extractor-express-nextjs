@@ -4,12 +4,12 @@ import helmet from "helmet";
 import { pino } from "pino";
 import { toNodeHandler } from "better-auth/node";
 import { openAPIRouter } from "@/api-docs/openAPIRouter";
-import { healthCheckRouter } from "@/api/health-check/health-check-router";
 import errorHandler from "@/common/middlewares/error-handler";
 import rateLimiter from "@/common/middlewares/rate-limiter";
 import requestLogger from "@/common/middlewares/request-logger";
 import { env } from "@/common/utils/env";
 import { auth } from "./common/utils/auth";
+import { extractData } from "./api/routes/extractor.route";
 
 const logger = pino({ name: "server start" });
 const app: Express = express();
@@ -29,7 +29,7 @@ app.use(requestLogger);
 
 // Routes
 app.all("/api/auth/*splat", toNodeHandler(auth));
-app.use("/health-check", healthCheckRouter);
+app.use("/ai", extractData);
 
 // Swagger UI
 app.use(openAPIRouter);

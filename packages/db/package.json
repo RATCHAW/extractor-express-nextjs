@@ -1,0 +1,23 @@
+{
+  "name": "@repo/db",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.ts",
+  "scripts": {
+    "db:generate": "prisma generate",
+    "db:migrate": "pnpm prisma migrate dev",
+    "db:deploy": "pnpm prisma db push",
+    "db:migrate:reset": "pnpm prisma migrate reset"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "prisma": "^6.8.2"
+  },
+  "dependencies": {
+    "@prisma/client": "6.8.2"
+  }
+}

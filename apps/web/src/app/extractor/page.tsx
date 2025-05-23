@@ -5,10 +5,7 @@ import { useForm, useFieldArray } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { set, z } from "zod/v4";
-import { useState } from "react";
-import { useFileUpload } from "@/hooks/ui/use-file-upload";
-import { useMutation } from "@tanstack/react-query";
+import { FileWithPreview, useFileUpload } from "@/hooks/ui/use-file-upload";
 import { useExtractorData } from "@/hooks/api/use-extractor-api";
 
 type Field = {
@@ -20,17 +17,7 @@ type FormValues = {
   fields: Field[];
 };
 
-const generateZodSchema = (fields: Field[]) => {
-  const shape: Record<string, any> = {};
-  fields.forEach((f) => {
-    shape[f.label] = z.string().describe(f.describe);
-  });
-  return z.object(shape);
-};
-
 const GeneratorPage = () => {
-  const [schema, setSchema] = useState(z.object({}));
-
   const maxSize = 5 * 1024 * 1024; // 5 MB
   const maxFiles = 10;
 
@@ -39,25 +26,6 @@ const GeneratorPage = () => {
     maxFiles,
     maxSize,
   });
-
-  //     const [
-  //     { files, isDragging, errors },
-  //     {
-  //         handleDragEnter,
-  //         handleDragLeave,
-  //         handleDragOver,
-  //         handleDrop,
-  //         openFileDialog,
-  //         removeFile,
-  //         clearFiles,
-  //         getInputProps,
-  //     },
-  // ] = useFileUpload({
-  //     multiple: true,
-  //     maxFiles,
-  //     maxSize,
-  //     // initialFiles,
-  // });
 
   const form = useForm<FormValues>({
     defaultValues: {
@@ -72,24 +40,42 @@ const GeneratorPage = () => {
 
   const extractDataMutation = useExtractorData();
 
-  const onSubmit = async (data: FormValues) => {
-    const schema = generateZodSchema(data.fields);
-    setSchema(schema);
+  const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        // Remove the data URL prefix (e.g., "data:image/png;base64,")
+        const base64 = (reader.result as string).split(",")[1];
+        if (base64) {
+          resolve(base64);
+        }
+      };
+      reader.onerror = (error) => reject(error);
+    });
+  };
 
-    const jsonSchema = z.toJSONSchema(schema);
-    const stringifyJson = JSON.stringify(jsonSchema, null, 2);
-    const files = state.files?.map((f: any) => f.base64) || [];
+  const filesToBase64 = async (files: File[]): Promise<string[]> => {
+    const base64Promises = files.map((file) => fileToBase64(file));
+    return await Promise.all(base64Promises);
+  };
+
+  const onSubmit = async (data: FormValues) => {
+    const files = state.files?.map((f: FileWithPreview) => f.file) || [];
 
     try {
-      const result = extractDataMutation.mutate({
-        files,
-        jsonSchema: stringifyJson,
+      const base64Files = await filesToBase64(files as File[]);
+
+      extractDataMutation.mutate({
+        files: base64Files,
+        fields: data.fields,
       });
-      console.log("AI Extraction Result:", result);
-    } catch (err) {
-      console.error("Mutation error:", err);
+    } catch (error) {
+      console.error("Error converting files to base64:", error);
+      alert("Error processing files. Please try again.");
     }
   };
+
   return (
     <main className="grid grid-rows-2">
       <div className="grid grid-cols-2 gap-4 p-4 max-h-1/2">
@@ -143,7 +129,6 @@ const GeneratorPage = () => {
       </div>
       <div className="mt-4">
         <h2 className="text-lg font-semibold">Generated Zod Schema</h2>
-        <pre className=" p-4 rounded">{JSON.stringify(z.toJSONSchema(schema), null, 2)}</pre>
       </div>
     </main>
   );

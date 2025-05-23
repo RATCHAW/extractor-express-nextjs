@@ -18,4 +18,4 @@ aiRegistry.registerPath({
   responses: createApiResponse(z.null(), "Success"),
 });
 
-extractData.post("/extract", validateRequest(FilesToDataSchema), aiController.filesToData);
+extractData.post("/extract", aiController.filesToData);

@@ -2,11 +2,13 @@ import { ServiceResponse } from "@/common/utils/response";
 import { google } from "@ai-sdk/google";
 import { generateObject } from "ai";
 import { type FilesToDataSchemaType } from "./ai.modal";
+import { fileTypeFromBuffer } from "file-type";
+import { z } from "zod";
 
 export class AiService {
   async filesToData(
     files: FilesToDataSchemaType["body"]["files"],
-    jsonSchema: FilesToDataSchemaType["body"]["jsonSchema"],
+    fields: { label: string; describe: string }[],
   ): Promise<ServiceResponse<any>> {
     const filesBuffer = await Promise.all(
       files.map(async (file) => {
@@ -15,17 +17,27 @@ export class AiService {
       }),
     );
 
-    const content: { type: "file"; data: string; mimeType: any }[] = filesBuffer.map((file) => ({
-      type: "file",
-      data: file.toString("base64"),
-      mimeType: "application/pdf", // Assuming all files are PDFs for simplicity
-    }));
+    const content: { type: "file"; data: string; mimeType: string }[] = await Promise.all(
+      filesBuffer.map(async (file) => {
+        const fileType = await fileTypeFromBuffer(file);
+        const mimeType = fileType?.mime || "application/octet-stream";
 
-    const mySchema = jsonSchema;
+        return {
+          type: "file",
+          data: file.toString("base64"),
+          mimeType: mimeType,
+        };
+      }),
+    );
+    const shape: Record<string, any> = {};
+    fields.forEach((f) => {
+      shape[f.label] = z.string().describe(f.describe);
+    });
+    const zodSchema = z.object(shape);
 
     const { object } = await generateObject({
       model: google("gemini-2.0-flash"),
-      schema: JSON.parse(mySchema),
+      schema: zodSchema,
       messages: [
         {
           role: "system",

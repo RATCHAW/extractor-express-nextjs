@@ -1,10 +1,11 @@
 {
   "name": "api",
   "version": "1.0.0",
+  "type": "module",
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "dev": "node --import=tsx --watch src/index.ts"
+    "dev": "node --env-file=.env --import=tsx --watch src/index.ts"
   },
   "keywords": [],
   "author": "",

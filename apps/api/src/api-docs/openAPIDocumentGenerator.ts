@@ -1,6 +1,5 @@
+import { aiRegistry } from "@/api/ai/ai.route";
 import { OpenAPIRegistry, OpenApiGeneratorV3 } from "@asteasolutions/zod-to-openapi";
-
-import { aiRegistry } from "@/api/routes/extractor.route";
 
 export type OpenAPIDocument = ReturnType<OpenApiGeneratorV3["generateDocument"]>;
 

@@ -5,7 +5,6 @@
     "paths": {
       "@/*": ["*"]
     },
-    "lib": ["ES2015"],
     "outDir": "./dist",
     "rootDir": "./src"
   },

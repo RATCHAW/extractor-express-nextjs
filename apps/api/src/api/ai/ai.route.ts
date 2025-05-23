@@ -5,7 +5,7 @@ import express, { type Router } from "express";
 import { z } from "zod";
 import { filesTodataController } from "../controllers/files-to-data.controller";
 import { validateRequest } from "@/common/utils/request-input-validation";
-import { FilesToDataSchema } from "../ai/ai.modal";
+import { FilesToDataSchema } from "./ai.modal";
 
 export const extractData: Router = express.Router();
 export const aiRegistry = new OpenAPIRegistry();

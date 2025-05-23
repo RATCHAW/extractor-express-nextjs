@@ -1,7 +1,7 @@
 import { auth } from "../utils/auth";
 import { type Request, type Response, type NextFunction } from "express";
 import { fromNodeHeaders } from "better-auth/node";
-import { ServiceResponse } from "@/api/services/response.service";
+import { ServiceResponse } from "@/common/utils/response";
 import { StatusCodes } from "http-status-codes";
 
 export async function isAuthenticated(req: Request, res: Response, next: NextFunction) {

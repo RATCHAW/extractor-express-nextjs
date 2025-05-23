@@ -9,7 +9,7 @@ import rateLimiter from "@/common/middlewares/rate-limiter";
 import requestLogger from "@/common/middlewares/request-logger";
 import { env } from "@/common/utils/env";
 import { auth } from "./common/utils/auth";
-import { extractData } from "./api/routes/extractor.route";
+import { extractData } from "./api/ai/ai.route";
 
 const logger = pino({ name: "server start" });
 const app: Express = express();

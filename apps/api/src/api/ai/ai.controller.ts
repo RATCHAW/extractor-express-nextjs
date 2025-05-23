@@ -9,3 +9,5 @@ export class AiController {
     res.status(serviceResponse.statusCode).send(serviceResponse);
   };
 }
+
+export const aiController = new AiController();

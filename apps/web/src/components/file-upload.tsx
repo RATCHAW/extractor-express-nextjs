@@ -12,32 +12,7 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { formatBytes, useFileUpload, type FileUploadActions, type FileUploadState } from "@/hooks/ui/use-file-upload";
-
-// Create some dummy initial files
-const initialFiles = [
-  {
-    name: "document.pdf",
-    size: 528737,
-    type: "application/pdf",
-    url: "https://example.com/document.pdf",
-    id: "document.pdf-1744638436563-8u5xuls",
-  },
-  {
-    name: "intro.zip",
-    size: 252873,
-    type: "application/zip",
-    url: "https://example.com/intro.zip",
-    id: "intro.zip-1744638436563-8u5xuls",
-  },
-  {
-    name: "conclusion.xlsx",
-    size: 352873,
-    type: "application/xlsx",
-    url: "https://example.com/conclusion.xlsx",
-    id: "conclusion.xlsx-1744638436563-8u5xuls",
-  },
-];
+import { formatBytes, type FileUploadActions, type FileUploadState } from "@/hooks/ui/use-file-upload";
 
 const getFileIcon = (file: { file: File | { type: string; name: string } }) => {
   const fileType = file.file instanceof File ? file.file.type : file.file.type;
@@ -197,16 +172,6 @@ export default function FileUpload({
           )}
         </div>
       )}
-
-      <p aria-live="polite" role="region" className="text-muted-foreground mt-2 text-center text-xs">
-        Multiple files uploader w/ list ∙{" "}
-        <a
-          href="https://github.com/origin-space/originui/tree/main/docs/use-file-upload.md"
-          className="hover:text-foreground underline"
-        >
-          API
-        </a>
-      </p>
     </div>
   );
 }

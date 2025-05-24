@@ -3,9 +3,10 @@ import { fileTypeFromBuffer } from "file-type";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
-const allowedMimeTypes = [
+export const allowedMimeTypes = [
   // Images
   "image/jpeg",
+  "image/avif",
   "image/jpg",
   "image/png",
   "image/gif",

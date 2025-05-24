@@ -10,11 +10,12 @@ export const api = {
         fields,
       }),
     });
+    const data = await response.json();
 
     if (!response.ok) {
-      throw new Error("Failed to extract data from files");
+      throw new Error(data.message || "Failed to extract data from files");
     }
 
-    return response.json();
+    return data;
   },
 };

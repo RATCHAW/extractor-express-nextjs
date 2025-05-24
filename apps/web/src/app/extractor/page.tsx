@@ -8,16 +8,19 @@ import { Input } from "@/components/ui/input";
 import { FileWithPreview, useFileUpload } from "@/hooks/ui/use-file-upload";
 import { useExtractorData } from "@/hooks/api/use-extractor-api";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { aiExtractorSchema, type AiExtractorSchemaType } from "@repo/schemas";
+import { aiExtractorSchema, type AiExtractorSchemaType, allowedMimeTypes } from "@repo/schemas";
 import { z } from "zod";
+import { Loader, Plus, ScanText } from "lucide-react";
+import { toast } from "sonner";
 
 const GeneratorPage = () => {
   const maxSize = 5 * 1024 * 1024;
-  const maxFiles = 1;
+  const maxFiles = 5;
 
   const [state, uploadActions] = useFileUpload({
     multiple: true,
     maxFiles,
+    accept: allowedMimeTypes.join(","),
     minFiles: 1,
     maxSize,
   });
@@ -64,10 +67,17 @@ const GeneratorPage = () => {
     try {
       const base64Files = await filesToBase64(files as File[]);
 
-      extractDataMutation.mutate({
-        files: base64Files,
-        fields: data.fields,
-      });
+      extractDataMutation.mutate(
+        {
+          files: base64Files,
+          fields: data.fields,
+        },
+        {
+          onSuccess: () => {
+            toast.success("Data extracted successfully!");
+          },
+        },
+      );
     } catch (error) {
       console.error("Error converting files to base64:", error);
       alert("Error processing files. Please try again.");
@@ -84,7 +94,7 @@ const GeneratorPage = () => {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             {fields.map((field, index) => (
-              <div key={field.id} className="flex gap-2 items-end rounded">
+              <div key={field.id} className="flex gap-2 items-stretch  rounded">
                 <FormField
                   control={form.control}
                   name={`fields.${index}.label`}
@@ -92,7 +102,7 @@ const GeneratorPage = () => {
                     <FormItem className="w-full">
                       <FormLabel>Label {index + 1}</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder={`Label ${index + 1}`} />
+                        <Input {...field} placeholder={`Title `} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -105,28 +115,29 @@ const GeneratorPage = () => {
                     <FormItem className="w-full">
                       <FormLabel>Describe {index + 1}</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder={`Describe ${index + 1}`} />
+                        <Input {...field} placeholder={`White text on the top left corner...`} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                <Button type="button" variant="destructive" size="sm" onClick={() => remove(index)} className="mt-2">
+                <Button type="button" variant="destructive" onClick={() => remove(index)} className="self-end mt-6">
                   Remove
                 </Button>
               </div>
             ))}
             <Button type="button" onClick={() => append({ label: "", describe: "" })} variant="secondary">
-              Add Field
+              <Plus /> Add Field
             </Button>
-            <Button type="submit" className="ml-2">
-              Submit
+            <Button disabled={extractDataMutation.isPending} type="submit" className="ml-2">
+              {extractDataMutation.isPending ? <Loader className="animate-spin" /> : <ScanText />} Extract Data
             </Button>
           </form>
         </Form>
       </div>
       <div className="mt-4">
-        <h2 className="text-lg font-semibold">Generated Zod Schema</h2>
+        <h2 className="text-lg font-semibold">Generated Data</h2>
+        <pre>{JSON.stringify(extractDataMutation.data?.responseObject, null, 2)}</pre>
       </div>
     </main>
   );

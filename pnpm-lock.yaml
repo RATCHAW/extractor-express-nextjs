@@ -233,6 +233,9 @@ importers:
 
   packages/schemas:
     dependencies:
+      file-type:
+        specifier: ^20.5.0
+        version: 20.5.0
       zod:
         specifier: ^3.25.16
         version: 3.25.16
@@ -243,6 +246,9 @@ importers:
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+      '@types/node':
+        specifier: ^22.15.3
+        version: 22.15.3
 
   packages/typescript-config: {}
 

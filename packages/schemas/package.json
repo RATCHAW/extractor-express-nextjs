@@ -9,9 +9,11 @@
   "license": "ISC",
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*"
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "^22.15.3"
   },
   "dependencies": {
+    "file-type": "^20.5.0",
     "zod": "^3.25.16"
   }
 }

@@ -1,6 +1,6 @@
 export const api = {
   async extractDataFromFiles({ files, fields }: { files: string[]; fields: { label: string; describe: string }[] }) {
-    const response = await fetch("http://localhost:8080/ai/extract", {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/ai/extract`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

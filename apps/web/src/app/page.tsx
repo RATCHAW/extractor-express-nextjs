@@ -1,76 +1,60 @@
-import Image, { type ImageProps } from "next/image";
-import styles from "./page.module.css";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { FileText, Zap, Upload } from "lucide-react";
 
-type Props = Omit<ImageProps, "src"> & {
-  srcLight: string;
-  srcDark: string;
-};
-
-const ThemeImage = (props: Props) => {
-  const { srcLight, srcDark, ...rest } = props;
-
+export default function LandingPage() {
   return (
-    <>
-      <Image {...rest} src={srcLight} className="imgLight" />
-      <Image {...rest} src={srcDark} className="imgDark" />
-    </>
-  );
-};
-
-export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <ThemeImage
-          className={styles.logo}
-          srcLight="turborepo-dark.svg"
-          srcDark="turborepo-light.svg"
-          alt="Turborepo logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>apps/web/app/page.tsx</code>
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new/clone?demo-description=Learn+to+implement+a+monorepo+with+a+two+Next.js+sites+that+has+installed+three+local+packages.&demo-image=%2F%2Fimages.ctfassets.net%2Fe5382hct74si%2F4K8ZISWAzJ8X1504ca0zmC%2F0b21a1c6246add355e55816278ef54bc%2FBasic.png&demo-title=Monorepo+with+Turborepo&demo-url=https%3A%2F%2Fexamples-basic-web.vercel.sh%2F&from=templates&project-name=Monorepo+with+Turborepo&repository-name=monorepo-turborepo&repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fturborepo%2Ftree%2Fmain%2Fexamples%2Fbasic&root-directory=apps%2Fdocs&skippable-integrations=1&teamSlug=vercel&utm_source=create-turbo"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image className={styles.logo} src="/vercel.svg" alt="Vercel logomark" width={20} height={20} />
-            Deploy now
-          </a>
-          <a
-            href="https://turborepo.com/docs?utm_source"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted">
+      <div className="max-w-4xl mx-auto px-6 text-center">
+        <div className="mb-8">
+          <div className="flex justify-center mb-6">
+            <div className="p-3 bg-primary rounded-full">
+              <FileText className="h-8 w-8 text-primary-foreground" />
+            </div>
+          </div>
+          <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6 leading-tight">
+            Extract Data from Any File
+            <span className="text-primary"> Instantly</span>
+          </h1>
+          <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed">
+            Upload your documents, describe what you need, and let AI extract the exact data you're looking for. No more
+            manual data entry.
+          </p>
         </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com/templates?search=turborepo&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image aria-hidden src="/window.svg" alt="Window icon" width={16} height={16} />
-          Examples
-        </a>
-        <a href="https://turborepo.com?utm_source=create-turbo" target="_blank" rel="noopener noreferrer">
-          <Image aria-hidden src="/globe.svg" alt="Globe icon" width={16} height={16} />
-          Go to turborepo.com →
-        </a>
-      </footer>
+
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+          <Link href="/extractor">
+            <Button size="lg" className="text-lg px-8 py-4">
+              <Upload className="mr-2 h-5 w-5" />
+              Start Extracting Data
+            </Button>
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-3xl mx-auto">
+          <div className="text-center">
+            <div className="bg-card p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center shadow-md border">
+              <Upload className="h-8 w-8 text-primary" />
+            </div>
+            <h3 className="font-semibold text-foreground mb-2">Upload Files</h3>
+            <p className="text-muted-foreground text-sm">Support for PDFs, images, documents, and more</p>
+          </div>
+          <div className="text-center">
+            <div className="bg-card p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center shadow-md border">
+              <FileText className="h-8 w-8 text-primary" />
+            </div>
+            <h3 className="font-semibold text-foreground mb-2">Describe Data</h3>
+            <p className="text-muted-foreground text-sm">Tell us what information you need extracted</p>
+          </div>
+          <div className="text-center">
+            <div className="bg-card p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center shadow-md border">
+              <Zap className="h-8 w-8 text-primary" />
+            </div>
+            <h3 className="font-semibold text-foreground mb-2">Get Results</h3>
+            <p className="text-muted-foreground text-sm">Receive structured data in seconds</p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

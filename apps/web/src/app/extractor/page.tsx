@@ -7,30 +7,26 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { FileWithPreview, useFileUpload } from "@/hooks/ui/use-file-upload";
 import { useExtractorData } from "@/hooks/api/use-extractor-api";
-
-type Field = {
-  label: string;
-  describe: string;
-};
-
-type FormValues = {
-  fields: Field[];
-};
+import { zodResolver } from "@hookform/resolvers/zod";
+import { aiExtractorSchema, type AiExtractorSchemaType } from "@repo/schemas";
+import { z } from "zod";
 
 const GeneratorPage = () => {
-  const maxSize = 5 * 1024 * 1024; // 5 MB
-  const maxFiles = 10;
+  const maxSize = 5 * 1024 * 1024;
+  const maxFiles = 1;
 
   const [state, uploadActions] = useFileUpload({
     multiple: true,
     maxFiles,
+    minFiles: 1,
     maxSize,
   });
 
-  const form = useForm<FormValues>({
+  const form = useForm({
     defaultValues: {
       fields: [{ label: "", describe: "" }],
     },
+    resolver: zodResolver(z.object({ fields: aiExtractorSchema.shape.fields })),
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -45,7 +41,6 @@ const GeneratorPage = () => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => {
-        // Remove the data URL prefix (e.g., "data:image/png;base64,")
         const base64 = (reader.result as string).split(",")[1];
         if (base64) {
           resolve(base64);
@@ -60,9 +55,12 @@ const GeneratorPage = () => {
     return await Promise.all(base64Promises);
   };
 
-  const onSubmit = async (data: FormValues) => {
+  const onSubmit = async (data: { fields: AiExtractorSchemaType["fields"] }) => {
     const files = state.files?.map((f: FileWithPreview) => f.file) || [];
-
+    const error = uploadActions.validateMinFiles();
+    if (error) {
+      return;
+    }
     try {
       const base64Files = await filesToBase64(files as File[]);
 

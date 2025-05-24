@@ -1,0 +1,17 @@
+{
+  "name": "@repo/schemas",
+  "version": "0.0.0",
+  "type": "module",
+  "description": "",
+  "main": "index.ts",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*"
+  },
+  "dependencies": {
+    "zod": "^3.25.16"
+  }
+}

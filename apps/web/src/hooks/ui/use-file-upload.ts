@@ -19,6 +19,7 @@ export type FileWithPreview = {
 
 export type FileUploadOptions = {
   maxFiles?: number; // Only used when multiple is true, defaults to Infinity
+  minFiles?: number; // Minimum number of files required, defaults to 0
   maxSize?: number; // in bytes
   accept?: string;
   multiple?: boolean; // Defaults to false
@@ -38,6 +39,7 @@ export type FileUploadActions = {
   removeFile: (id: string) => void;
   clearFiles: () => void;
   clearErrors: () => void;
+  validateMinFiles: () => boolean;
   handleDragEnter: (e: DragEvent<HTMLElement>) => void;
   handleDragLeave: (e: DragEvent<HTMLElement>) => void;
   handleDragOver: (e: DragEvent<HTMLElement>) => void;
@@ -52,6 +54,7 @@ export type FileUploadActions = {
 export const useFileUpload = (options: FileUploadOptions = {}): [FileUploadState, FileUploadActions] => {
   const {
     maxFiles = Infinity,
+    minFiles = 0,
     maxSize = Infinity,
     accept = "*",
     multiple = false,
@@ -247,6 +250,18 @@ export const useFileUpload = (options: FileUploadOptions = {}): [FileUploadState
     ],
   );
 
+  const validateMinFiles = useCallback(() => {
+    if (minFiles > 0 && state.files.length < minFiles) {
+      const error = `You must upload at least ${minFiles} file${minFiles > 1 ? "s" : ""}.`;
+      setState((prev) => ({
+        ...prev,
+        errors: [...prev.errors, error],
+      }));
+      return true;
+    }
+    return false;
+  }, [minFiles, state.files.length]);
+
   const removeFile = useCallback(
     (id: string) => {
       setState((prev) => {
@@ -364,6 +379,7 @@ export const useFileUpload = (options: FileUploadOptions = {}): [FileUploadState
       removeFile,
       clearFiles,
       clearErrors,
+      validateMinFiles,
       handleDragEnter,
       handleDragLeave,
       handleDragOver,

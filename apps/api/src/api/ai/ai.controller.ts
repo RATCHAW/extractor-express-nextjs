@@ -1,13 +1,15 @@
 import { type RequestHandler, type Response, type Request } from "express";
 import { aiService } from "./ai.service";
-import { type FilesToDataSchemaType } from "./ai.modal";
-import { logger } from "@/server";
+import { type AiExtractorSchemaType } from "@repo/schemas";
 
 export class AiController {
-  public filesToData: RequestHandler = async (req: Request, res: Response) => {
-    const body = req.body as FilesToDataSchemaType["body"];
+  public filesToData: RequestHandler = async (req: Request<{}, {}, AiExtractorSchemaType>, res: Response) => {
+    const body = req.body;
 
-    const serviceResponse = await aiService.filesToData(body.files, body.fields);
+    const serviceResponse = await aiService.filesToData({
+      files: body.files,
+      fields: body.fields,
+    });
     res.status(serviceResponse.statusCode).send(serviceResponse);
   };
 }

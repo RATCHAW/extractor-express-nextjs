@@ -1,15 +1,16 @@
 import { ServiceResponse } from "@/common/utils/response";
 import { google } from "@ai-sdk/google";
 import { generateObject } from "ai";
-import { type FilesToDataSchemaType } from "./ai.modal";
 import { fileTypeFromBuffer } from "file-type";
 import { z } from "zod";
+import { AiExtractorSchemaType } from "@repo/schemas";
 
 export class AiService {
-  async filesToData(
-    files: FilesToDataSchemaType["body"]["files"],
-    fields: { label: string; describe: string }[],
-  ): Promise<ServiceResponse<any>> {
+  async filesToData({ files, fields }: AiExtractorSchemaType): Promise<
+    ServiceResponse<{
+      [x: string]: any;
+    }>
+  > {
     const filesBuffer = await Promise.all(
       files.map(async (file) => {
         const fileBuffer = Buffer.from(file, "base64");
@@ -33,15 +34,16 @@ export class AiService {
     fields.forEach((f) => {
       shape[f.label] = z.string().describe(f.describe);
     });
-    const zodSchema = z.object(shape);
+    const fileSchema = z.object(shape);
+    const schema = z.array(fileSchema);
 
     const { object } = await generateObject({
       model: google("gemini-2.0-flash"),
-      schema: zodSchema,
+      schema: schema,
       messages: [
         {
           role: "system",
-          content: `You are an AI document parser. Extract the data filled into the form shown in the image. The output should match the schema provided.`,
+          content: `You are an AI document parser. Extract the data filled into the form shown in the images. Return an array of objects where each object contains the extracted data from each corresponding file. The output should match the schema provided.`,
         },
         {
           role: "user",

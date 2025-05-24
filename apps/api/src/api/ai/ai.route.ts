@@ -4,8 +4,8 @@ import { OpenAPIRegistry } from "@asteasolutions/zod-to-openapi";
 import express, { type Router } from "express";
 import { z } from "zod";
 import { validateRequest } from "@/common/utils/request-input-validation";
-import { FilesToDataSchema } from "./ai.modal";
 import { aiController } from "./ai.controller";
+import { filesToDataRequestSchema } from "@repo/schemas";
 
 export const extractData: Router = express.Router();
 export const aiRegistry = new OpenAPIRegistry();
@@ -18,4 +18,4 @@ aiRegistry.registerPath({
   responses: createApiResponse(z.null(), "Success"),
 });
 
-extractData.post("/extract", aiController.filesToData);
+extractData.post("/extract", validateRequest(filesToDataRequestSchema), aiController.filesToData);

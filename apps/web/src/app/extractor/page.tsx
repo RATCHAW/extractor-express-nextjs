@@ -8,17 +8,20 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileWithPreview, useFileUpload } from "@/hooks/ui/use-file-upload";
 import { useExtractorData } from "@/hooks/api/use-extractor-api";
+import { useExportFile } from "@/hooks/ui/use-export-file";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { aiExtractorSchema, type AiExtractorSchemaType, allowedMimeTypes } from "@repo/schemas";
 import { z } from "zod";
 import { Loader, Plus, ScanText, X, FileText, Settings, Download, FileSpreadsheet, Code2 } from "lucide-react";
 import { toast } from "sonner";
-import Papa from "papaparse";
-import * as XLSX from "xlsx";
+import { authClient } from "@/lib/auth";
+import ExtractorHeader from "./_components/header";
 
 const GeneratorPage = () => {
   const maxSize = 5 * 1024 * 1024;
   const maxFiles = 5;
+
+  const { data, isPending } = authClient.useSession();
 
   const [state, uploadActions] = useFileUpload({
     multiple: true,
@@ -41,6 +44,7 @@ const GeneratorPage = () => {
   });
 
   const extractDataMutation = useExtractorData();
+  const { exportAsCSV, exportAsJSON, exportAsExcel } = useExportFile();
 
   const fileToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -59,66 +63,6 @@ const GeneratorPage = () => {
   const filesToBase64 = async (files: File[]): Promise<string[]> => {
     const base64Promises = files.map((file) => fileToBase64(file));
     return await Promise.all(base64Promises);
-  };
-
-  const downloadFile = (content: string, filename: string, contentType: string) => {
-    const blob = new Blob([content], { type: contentType });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
-  };
-
-  const exportAsCSV = () => {
-    const data = extractDataMutation.data?.responseObject;
-    if (!data || !Array.isArray(data)) {
-      toast.error("No data available to export");
-      return;
-    }
-
-    const csv = Papa.unparse(data);
-    downloadFile(csv, "extracted-data.csv", "text/csv");
-    toast.success("CSV exported successfully!");
-  };
-
-  const exportAsJSON = () => {
-    const data = extractDataMutation.data?.responseObject;
-    if (!data) {
-      toast.error("No data available to export");
-      return;
-    }
-
-    const json = JSON.stringify(data, null, 2);
-    downloadFile(json, "extracted-data.json", "application/json");
-    toast.success("JSON exported successfully!");
-  };
-
-  const exportAsExcel = () => {
-    const data = extractDataMutation.data?.responseObject;
-    if (!data || !Array.isArray(data)) {
-      toast.error("No data available to export");
-      return;
-    }
-
-    const worksheet = XLSX.utils.json_to_sheet(data);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Extracted Data");
-
-    const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
-    const blob = new Blob([excelBuffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "extracted-data.xlsx";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
-    toast.success("Excel file exported successfully!");
   };
 
   const onSubmit = async (data: { fields: AiExtractorSchemaType["fields"] }) => {
@@ -147,16 +91,13 @@ const GeneratorPage = () => {
     }
   };
 
+  const userCredits = 7;
+  const maxCredits = 10;
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto p-6 space-y-8">
-        <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold text-foreground flex items-center justify-center gap-2">
-            <FileText className="h-8 w-8 text-primary" />
-            Data Extractor
-          </h1>
-          <p className="text-muted-foreground">Upload your files and configure extraction fields</p>
-        </div>
+        <ExtractorHeader userCredits={userCredits} maxCredits={maxCredits} />
 
         <div className="grid lg:grid-cols-2 gap-8">
           <Card className="h-fit">
@@ -273,15 +214,15 @@ const GeneratorPage = () => {
                   <CardDescription>Results from your file analysis</CardDescription>
                 </div>
                 <div className="flex gap-2">
-                  <Button onClick={exportAsCSV} variant="outline" size="sm">
+                  <Button onClick={() => exportAsCSV(extractDataMutation.data)} variant="outline" size="sm">
                     <FileSpreadsheet className="h-4 w-4 mr-2" />
                     CSV
                   </Button>
-                  <Button onClick={exportAsJSON} variant="outline" size="sm">
+                  <Button onClick={() => exportAsJSON(extractDataMutation.data)} variant="outline" size="sm">
                     <Code2 className="h-4 w-4 mr-2" />
                     JSON
                   </Button>
-                  <Button onClick={exportAsExcel} variant="outline" size="sm">
+                  <Button onClick={() => exportAsExcel(extractDataMutation.data)} variant="outline" size="sm">
                     <Download className="h-4 w-4 mr-2" />
                     Excel
                   </Button>

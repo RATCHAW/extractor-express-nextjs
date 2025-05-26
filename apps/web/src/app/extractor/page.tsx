@@ -15,10 +15,14 @@ import { z } from "zod";
 import { Loader, Plus, ScanText, X, FileText, Settings, Download, FileSpreadsheet, Code2 } from "lucide-react";
 import { toast } from "sonner";
 import ExtractorHeader from "./_components/header";
+import { useSession } from "@/lib/auth";
+import { queryClient } from "@/lib/query-client";
 
 const GeneratorPage = () => {
   const maxSize = 5 * 1024 * 1024;
-  const maxFiles = 5;
+
+  const { data: session } = useSession();
+  const maxFiles = Math.min(10, session?.user.credits || 10);
 
   const [state, uploadActions] = useFileUpload({
     multiple: true,
@@ -78,6 +82,7 @@ const GeneratorPage = () => {
         },
         {
           onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["session"] });
             toast.success("Data extracted successfully!");
           },
         },

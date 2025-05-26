@@ -20,6 +20,6 @@ export const useSession = () => {
 };
 
 export const signOut = async () => {
-  queryClient.invalidateQueries({ queryKey: ["session"] });
   authClient.signOut();
+  queryClient.invalidateQueries({ queryKey: ["session"] });
 };

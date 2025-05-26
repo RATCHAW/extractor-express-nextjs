@@ -19,10 +19,10 @@ app.set("trust proxy", true);
 
 // Middlewares
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
-app.use(cors({ origin: env.CORS_ORIGINS.split(","), credentials: true }));
 app.use(helmet());
 app.use(rateLimiter);
-app.all("/api/auth/*splat", toNodeHandler(auth));
+app.use(cors({ origin: env.CORS_ORIGINS.split(","), credentials: true }));
+app.all("/api/auth/{*any}", toNodeHandler(auth));
 app.use(express.json({ limit: "10mb" }));
 
 // Request logging

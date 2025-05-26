@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { FileText, User, LogIn } from "lucide-react";
+import { FileText, User, LogIn, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,20 +12,16 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { authClient } from "@/lib/auth";
+import { Badge } from "@/components/ui/badge";
+import { authClient, signOut, useSession } from "@/lib/auth";
 import { Discord, Google } from "@/components/icons";
 
-interface ExtractorHeaderProps {
-  userCredits?: number;
-  maxCredits?: number;
-}
-
-const ExtractorHeader = ({ userCredits = 0, maxCredits = 10 }: ExtractorHeaderProps) => {
+const ExtractorHeader = () => {
   const [isSignInDialogOpen, setIsSignInDialogOpen] = useState(false);
-  const { data: session } = authClient.useSession();
+  const { data: session } = useSession();
 
+  const userCredits = session?.user?.credits || 0;
   const handleGoogleSignIn = async () => {
     try {
       await authClient.signIn.social({
@@ -50,11 +46,8 @@ const ExtractorHeader = ({ userCredits = 0, maxCredits = 10 }: ExtractorHeaderPr
     }
   };
 
-  const creditsPercentage = (userCredits / maxCredits) * 100;
-
   return (
     <div className="flex items-center justify-between w-full mb-8">
-      {/* Left side - Title */}
       <div className="flex items-center gap-2">
         <FileText className="h-8 w-8 text-primary" />
         <div>
@@ -63,7 +56,6 @@ const ExtractorHeader = ({ userCredits = 0, maxCredits = 10 }: ExtractorHeaderPr
         </div>
       </div>
 
-      {/* Right side - Auth */}
       <div>
         {session?.user ? (
           <DropdownMenu>
@@ -92,18 +84,25 @@ const ExtractorHeader = ({ userCredits = 0, maxCredits = 10 }: ExtractorHeaderPr
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium">Credits</span>
-                    <span className="text-sm text-muted-foreground">
-                      {userCredits}/{maxCredits}
-                    </span>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <CreditCard className="h-4 w-4 text-primary" />
+                      <span className="text-sm font-medium">Credits</span>
+                    </div>
+                    <Badge variant="secondary" className="bg-primary/10 text-primary font-semibold">
+                      {userCredits}
+                    </Badge>
                   </div>
-                  <Progress value={creditsPercentage} className="h-2" />
-                  <p className="text-xs text-muted-foreground">{userCredits} extraction credits remaining</p>
+                  <div className="bg-muted/50 rounded-md p-3">
+                    <p className="text-xs text-muted-foreground text-center">
+                      You have <span className="font-medium text-foreground">{userCredits}</span> extraction credits
+                      remaining
+                    </p>
+                  </div>
                 </div>
 
-                <Button variant="outline" className="w-full" onClick={() => authClient.signOut()}>
+                <Button variant="outline" className="w-full" onClick={() => signOut()}>
                   Sign Out
                 </Button>
               </div>

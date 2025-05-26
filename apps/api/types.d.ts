@@ -6,7 +6,7 @@ declare global {
       user: {
         user: User;
         session: Session;
-      } | null;
+      };
     }
   }
 }

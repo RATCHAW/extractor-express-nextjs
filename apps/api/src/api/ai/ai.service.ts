@@ -4,13 +4,28 @@ import { generateObject } from "ai";
 import { fileTypeFromBuffer } from "file-type";
 import { z } from "zod";
 import { AiExtractorSchemaType } from "@repo/schemas";
+import { CreditService } from "../credits/credits.service";
+import { StatusCodes } from "http-status-codes";
 
 export class AiService {
-  async filesToData({ files, fields }: AiExtractorSchemaType): Promise<
+  private creditService: CreditService;
+
+  constructor() {
+    this.creditService = new CreditService();
+  }
+  async filesToData(
+    { files, fields }: AiExtractorSchemaType,
+    userId: string,
+  ): Promise<
     ServiceResponse<{
       [x: string]: any;
-    }>
+    } | null>
   > {
+    const userCredits = await CreditService.getCredits(userId);
+    if (userCredits < 1) {
+      return ServiceResponse.failure("Insufficient credits", null, StatusCodes.PAYMENT_REQUIRED);
+    }
+
     const filesBuffer = await Promise.all(
       files.map(async (file) => {
         const fileBuffer = Buffer.from(file, "base64");
@@ -51,8 +66,8 @@ export class AiService {
         },
       ],
     });
-
-    return ServiceResponse.success("Files processed successfully", object, 200);
+    await this.creditService.removeCredits(userId, files.length);
+    return ServiceResponse.success("Files processed successfully", object, StatusCodes.OK);
   }
 }
 

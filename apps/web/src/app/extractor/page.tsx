@@ -14,14 +14,11 @@ import { aiExtractorSchema, type AiExtractorSchemaType, allowedMimeTypes } from 
 import { z } from "zod";
 import { Loader, Plus, ScanText, X, FileText, Settings, Download, FileSpreadsheet, Code2 } from "lucide-react";
 import { toast } from "sonner";
-import { authClient } from "@/lib/auth";
 import ExtractorHeader from "./_components/header";
 
 const GeneratorPage = () => {
   const maxSize = 5 * 1024 * 1024;
   const maxFiles = 5;
-
-  const { data, isPending } = authClient.useSession();
 
   const [state, uploadActions] = useFileUpload({
     multiple: true,
@@ -91,13 +88,10 @@ const GeneratorPage = () => {
     }
   };
 
-  const userCredits = 7;
-  const maxCredits = 10;
-
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto p-6 space-y-8">
-        <ExtractorHeader userCredits={userCredits} maxCredits={maxCredits} />
+        <ExtractorHeader />
 
         <div className="grid lg:grid-cols-2 gap-8">
           <Card className="h-fit">

@@ -5,7 +5,9 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "dev": "node --env-file=.env --import=tsx --watch src/index.ts"
+    "dev": "node --env-file=.env --import=tsx --watch src/index.ts",
+    "build": "tsc && tsup",
+    "start": "node --env-file=.env dist/index.js"
   },
   "keywords": [],
   "author": "",
@@ -37,18 +39,19 @@
     "@types/swagger-ui-express": "^4.1.8",
     "pino-pretty": "^13.0.0",
     "tsup": "^8.5.0",
-    "tsx": "^4.19.4"
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
   },
   "tsup": {
     "entry": [
-      "src/index.ts"
+      "src/**/*.ts"
     ],
     "outDir": "dist",
     "format": [
       "esm",
       "cjs"
     ],
-    "target": "es2020",
+    "target": "es2022",
     "sourcemap": true,
     "clean": true,
     "dts": true,

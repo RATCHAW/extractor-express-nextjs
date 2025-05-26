@@ -3,17 +3,36 @@
   "version": "0.0.0",
   "type": "module",
   "description": "",
-  "main": "index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "scripts": {
+    "build": "tsc && tsup"
+  },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@types/node": "^22.15.3"
+    "@types/node": "^22.15.3",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3"
   },
   "dependencies": {
     "file-type": "^20.5.0",
     "zod": "^3.25.16"
+  },
+  "tsup": {
+    "entry": ["index.ts"],
+    "format": ["esm", "cjs"],
+    "dts": true,
+    "clean": true,
+    "sourcemap": true
   }
 }

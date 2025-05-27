@@ -5,7 +5,7 @@ on:
     branches: ["main"]
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: "extractor-api"
+  IMAGE_NAME: "ratchaw/extractor-express-nextjs"
 
 jobs:
   amd64:

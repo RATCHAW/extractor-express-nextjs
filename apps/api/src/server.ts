@@ -28,6 +28,11 @@ app.use(express.json({ limit: "10mb" }));
 // Request logging
 app.use(requestLogger);
 
+// Health check endpoint
+app.get("/health", (_req, res) => {
+  res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
+});
+
 // Routes
 app.use("/ai", extractData);
 

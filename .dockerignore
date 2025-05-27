@@ -1,0 +1,8 @@
+
+**/node_modules
+.turbo
+dist
+build
+out
+.next
+.git

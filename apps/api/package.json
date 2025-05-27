@@ -13,9 +13,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@repo/db": "workspace:*",
+    "@repo/schemas": "workspace:*",
     "@ai-sdk/google": "^1.2.18",
     "@asteasolutions/zod-to-openapi": "^7.3.0",
-    "@repo/schemas": "workspace:*",
     "ai": "^4.3.16",
     "better-auth": "^1.2.8",
     "cors": "^2.8.5",
@@ -30,7 +31,6 @@
     "zod": "^3.25.16"
   },
   "devDependencies": {
-    "@repo/db": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/cors": "^2.8.18",

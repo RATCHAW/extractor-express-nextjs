@@ -2,13 +2,18 @@
   "name": "@repo/db",
   "version": "0.0.0",
   "type": "module",
-  "description": "",
-  "main": "index.ts",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "db:generate": "prisma generate",
+    "generate": "prisma generate",
     "db:migrate": "pnpm prisma migrate dev",
     "db:deploy": "pnpm prisma db push",
-    "db:migrate:reset": "pnpm prisma migrate reset"
+    "db:migrate:reset": "pnpm prisma migrate reset",
+    "prebuild": "pnpm run db:generate"
   },
   "keywords": [],
   "author": "",

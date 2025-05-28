@@ -18,6 +18,9 @@ export const auth = betterAuth({
       },
     },
   },
+  defaultCookieAttributes: {
+    sameSite: "none",
+  },
   socialProviders: {
     google: {
       clientId: env.GOOGLE_CLIENT_ID,
@@ -30,6 +33,6 @@ export const auth = betterAuth({
   },
   logger: {
     level: env.AUTH_DEBUG_LEVEL,
-    disabled: env.AUTH_DISABLED,
+    disabled: env.AUTH_DEBUG_DISABLED,
   },
 });

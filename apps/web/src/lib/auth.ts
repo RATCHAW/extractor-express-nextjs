@@ -7,6 +7,9 @@ import { queryClient } from "./query-client";
 export const authClient = createAuthClient({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
   plugins: [inferAdditionalFields<typeof auth>()],
+  fetchOptions: {
+    credentials: "include",
+  },
 });
 
 export const useSession = () => {

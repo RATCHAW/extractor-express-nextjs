@@ -28,4 +28,8 @@ export const auth = betterAuth({
       clientSecret: env.DISCORD_CLIENT_SECRET,
     },
   },
+  logger: {
+    level: env.AUTH_DEBUG_LEVEL,
+    disabled: env.AUTH_DISABLED,
+  },
 });

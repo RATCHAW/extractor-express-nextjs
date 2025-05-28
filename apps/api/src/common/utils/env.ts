@@ -24,7 +24,7 @@ const envSchema = z.object({
   DISCORD_CLIENT_SECRET: z.string().min(1, "DISCORD_CLIENT_SECRET is required"),
 
   AUTH_DEBUG_LEVEL: z.enum(["error", "warn", "info", "debug"]).default("info"),
-  AUTH_DISABLED: z.boolean().default(false),
+  AUTH_DEBUG_DISABLED: z.coerce.boolean().default(false),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);

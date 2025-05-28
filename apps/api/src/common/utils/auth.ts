@@ -18,8 +18,10 @@ export const auth = betterAuth({
       },
     },
   },
-  defaultCookieAttributes: {
-    sameSite: "none",
+  advanced: {
+    defaultCookieAttributes: {
+      sameSite: "none",
+    },
   },
   socialProviders: {
     google: {

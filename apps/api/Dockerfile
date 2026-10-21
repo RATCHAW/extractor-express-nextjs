@@ -1,4 +1,4 @@
-FROM node:23.11.1-alpine AS base
+FROM node:24.22.1-alpine AS base
 
 # Install pnpm and turbo globally
 RUN npm install -g pnpm turbo
